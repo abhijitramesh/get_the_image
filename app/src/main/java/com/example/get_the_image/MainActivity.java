@@ -1,4 +1,5 @@
 package com.example.get_the_image;
+import android.arch.persistence.room.Database;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -97,7 +98,7 @@ String url = "https://picsum.photos/";
 
             try {
                 in = body.byteStream();
-                out = new FileOutputStream(getExternalFilesDir(null) + File.separator + "AndroidTutorialPoint.jpg");
+                out = new FileOutputStream(getExternalFilesDir(null) + File.separator + "AndroidImage.jpg");
                 int c;
 
                 while ((c = in.read()) != -1) {
@@ -119,11 +120,8 @@ String url = "https://picsum.photos/";
 
             int width, height;
             ImageView image = (ImageView) findViewById(R.id.imageViewId);
-            Bitmap bMap = BitmapFactory.decodeFile(getExternalFilesDir(null) + File.separator + "AndroidTutorialPoint.jpg");
-            width = 2*bMap.getWidth();
-            height = 6*bMap.getHeight();
-            Bitmap bMap2 = Bitmap.createScaledBitmap(bMap, width, height, false);
-            image.setImageBitmap(bMap2);
+            Bitmap bMap = BitmapFactory.decodeFile(getExternalFilesDir(null) + File.separator + "AndroidImage.jpg");
+            image.setImageBitmap(bMap);
 
             return true;
 
@@ -137,40 +135,37 @@ String url = "https://picsum.photos/";
     }
     @OnClick(R.id.button_1)
     public void onButtonClick(Button button){
-       saveImage();
+        saveImage();
     }
 
+private void saveImage(){
+    ImageView image = (ImageView) findViewById(R.id.imageViewId);
+    final Bitmap bMap = BitmapFactory.decodeFile(getExternalFilesDir(null) + File.separator + "AndroidImage.jpg");
 
-    private void saveImage() {
-        final ImageView image = (ImageView) findViewById(R.id.imageViewId);
-        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        final byte[] imageInByte = baos.toByteArray();
+    class SaveImage extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected Void doInBackground(Void...voids){
 
-        class SaveImage extends AsyncTask<Void, Void, Void> {
+            Image image1 = new Image();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bMap.compress(Bitmap.CompressFormat.JPEG,100, stream);
+                 image1.setImage(stream.toByteArray());
 
-            @Override
-            protected Void doInBackground(Void... voids) {
-
-               //creating a task
-                Image image1 = new Image();
-                image1.setImage(imageInByte);
-
-               //adding to database
-                DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
-                       .imageDAO()
-                        .insert(image1);
-
+            DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
+                    .imageDAO()
+                    .insert(image1);
             Log.d("Image","Saved");
-                return null;
-            }
-
+            return null;
         }
-
-        SaveImage st = new SaveImage();
-        st.execute();
     }
+    SaveImage si = new SaveImage();
+    si.execute();
+
+
+
+}
+
+
 
 }
 
