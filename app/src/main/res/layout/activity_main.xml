@@ -15,6 +15,7 @@
         android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:hint="Enter Resolution"
+        android:numeric="decimal"
         />
     <EditText
         android:layout_width="match_parent"
@@ -22,6 +23,7 @@
         android:id="@+id/res2"
         android:layout_weight="1"
         android:hint="Enter Resolution"
+        android:numeric="decimal"
 
         />
     <ImageView
@@ -31,15 +33,29 @@
         android:id="@+id/imageViewId"
 
         />
+    <LinearLayout
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1">
+
 
     <Button
         android:layout_width="100dp"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_gravity="center"
         android:text="Saerch"
         android:id="@+id/button"
-
-
         />
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="Download"
+            android:id="@+id/button_1"
+            />
+        </LinearLayout>
+
+
 </LinearLayout>

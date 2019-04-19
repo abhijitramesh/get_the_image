@@ -1,16 +1,24 @@
 package com.example.get_the_image;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.example.get_the_image.Room.DatabaseClient;
+import com.example.get_the_image.Room.Image;
 import com.example.get_the_image.api.RetrofitImageAPI;
 import com.squareup.okhttp.ResponseBody;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -127,5 +135,42 @@ String url = "https://picsum.photos/";
     private String getRes(){
         return res1.getText().toString()+"/"+res2.getText().toString();
     }
+    @OnClick(R.id.button_1)
+    public void onButtonClick(Button button){
+       saveImage();
+    }
+
+
+    private void saveImage() {
+        final ImageView image = (ImageView) findViewById(R.id.imageViewId);
+        Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        final byte[] imageInByte = baos.toByteArray();
+
+        class SaveImage extends AsyncTask<Void, Void, Void> {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+               //creating a task
+                Image image1 = new Image();
+                image1.setImage(imageInByte);
+
+               //adding to database
+                DatabaseClient.getInstance(getApplicationContext()).getAppDatabase()
+                       .imageDAO()
+                        .insert(image1);
+
+            Log.d("Image","Saved");
+                return null;
+            }
+
+        }
+
+        SaveImage st = new SaveImage();
+        st.execute();
+    }
+
 }
 
